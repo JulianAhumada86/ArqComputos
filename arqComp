@@ -1,0 +1,29 @@
+		
+__main
+		MOV		R0, #1 ;Imput para elegir
+		
+		
+		CMP		R0,#1 ;ESte seria el caso 1, del void que resta
+		BEQ		Case1
+		
+		CMP		R0,#2 ;Este seria el caso 2
+		BEQ		Case2
+		
+		
+Case1
+		MOV		R1,#20 ;este sera el numero que se restara hasta 0
+While
+		CMP		R1,#0
+		BEQ		Done ;Si es 0 sale
+		SUB		R1,R1,#1
+		B		While
+		
+Done
+		B		EndSwitch
+		
+Case2
+		
+		
+		
+		
+EndSwitch
