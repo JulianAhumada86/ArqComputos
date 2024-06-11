@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <stdint.h>
 
+
 int retardo(unsigned long int a) {
     unsigned int velocidad=a;
     while (a>0){
@@ -96,6 +97,37 @@ void auto_fantastico(unsigned long int velocidad) {
     }
 }
 
+
+
+void choque(unsigned long int velocidad) {
+    printf("Choque\n");
+    printf("Presione ESC para regresar al menu principal\n");
+    printf("Pulse la flecha para arriba para incrementar la velocidad, o para abajo para disminuirla\n");
+    printf("\n");
+    uint8_t tabla[] = {
+        0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42
+    };
+
+    while (1) {
+        for (int i = 0; i < 7; ++i) {
+            printf("\033[A");
+            printf("\r                ");
+            printf("\rDemora: %lu\n", velocidad);
+
+            char* texto = mostrar2(tabla[i]);
+            printf("\r%s",texto);
+            velocidad = retardo(velocidad);
+
+
+            if (GetAsyncKeyState(VK_ESCAPE) & 0x0001) {
+                system("cls");
+                return;
+            }
+        }
+    }
+}
+
+
 void carrera(unsigned long int velocidad) {
     printf("La Carrera\n");
     printf("Presione ESC para regresar al menu principal\n");
@@ -117,34 +149,6 @@ void carrera(unsigned long int velocidad) {
 
             printf("\r%s",texto);
             velocidad  = retardo(velocidad);
-
-            if (GetAsyncKeyState(VK_ESCAPE) & 0x0001) {
-                system("cls");
-                return;
-            }
-        }
-    }
-}
-
-void choque(unsigned long int velocidad) {
-    printf("Choque\n");
-    printf("Presione ESC para regresar al menu principal\n");
-    printf("Pulse la flecha para arriba para incrementar la velocidad, o para abajo para disminuirla\n");
-    printf("\n");
-    uint8_t tabla[] = {
-        0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42
-    };
-
-    while (1) {
-        for (int i = 0; i < 7; ++i) {
-            printf("\033[A");
-            printf("\r                ");
-            printf("\rDemora: %lu\n", velocidad);
-
-            char* texto = mostrar2(tabla[i]);
-            printf("\r%s",texto);
-            velocidad = retardo(velocidad);
-
 
             if (GetAsyncKeyState(VK_ESCAPE) & 0x0001) {
                 system("cls");
@@ -282,6 +286,23 @@ int main() {
                     system("cls");
                     printf("Sistema apagado\n");
                     break;
+                case 7:
+                    printf("Leyendo registros\n");
+                    int value = 0;
+                    printf("Valor antes de modificar: %d\n", value);
+
+
+
+                    extern void modify(int *ptr);
+
+                    // Llamar a la función ensambladora para modificar el valor
+
+
+                    printf("Valor después de modificar: %d\n", value);
+                    opcion=0;
+                    break;
+
+
                 default:
                     system("cls");
                     printf("No existe secuencia para ese numero\n");

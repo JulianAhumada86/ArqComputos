@@ -213,30 +213,6 @@ void auto_fantastico(unsigned long int velocidad)
     }
 }
 
-void carrera(unsigned long int velocidad)
-{
-    uint8_t tabla[] = {
-        0x80, 0x80, 0x40, 0x40, 0x20, 0x20, 0x10, 0x10, 0x88, 0x48, 0x24, 0x14, 0xA, 0x6, 0x3, 0x1};
-
-    while (1)
-    {
-        for (int i = 0; i < 16; ++i)
-        {
-            cout << "Presione ESC para regresar al menu principal" << endl;
-            cout << "Pulse la flecha para arriba para incrementar la velocidad, o para abajo para disminuirla" << endl;
-            cout << "Demora: " << velocidad << endl;
-            mostrar(tabla[i]);
-            retardo(velocidad);
-            system("cls");
-            velocidad = fvelocidad(velocidad);
-            if (GetAsyncKeyState(VK_ESCAPE) & 0x0001)
-            {
-                return;
-            }
-        }
-    }
-}
-
 void choque(unsigned long int velocidad)
 {
     uint8_t tabla[] = {
@@ -262,6 +238,33 @@ void choque(unsigned long int velocidad)
         }
     }
 }
+
+
+void carrera(unsigned long int velocidad)
+{
+    uint8_t tabla[] = {
+        0x80, 0x80, 0x40, 0x40, 0x20, 0x20, 0x10, 0x10, 0x88, 0x48, 0x24, 0x14, 0xA, 0x6, 0x3, 0x1};
+
+    while (1)
+    {
+        for (int i = 0; i < 16; ++i)
+        {
+            cout << "Presione ESC para regresar al menu principal" << endl;
+            cout << "Pulse la flecha para arriba para incrementar la velocidad, o para abajo para disminuirla" << endl;
+            cout << "Demora: " << velocidad << endl;
+            mostrar(tabla[i]);
+            retardo(velocidad);
+            system("cls");
+            velocidad = fvelocidad(velocidad);
+            if (GetAsyncKeyState(VK_ESCAPE) & 0x0001)
+            {
+                return;
+            }
+        }
+    }
+}
+
+
 
 void bateriaDescargandose(unsigned long int velocidad)
 {
