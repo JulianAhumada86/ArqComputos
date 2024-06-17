@@ -5,6 +5,7 @@
 #include <ncurses.h>
 #include <unistd.h>
 #include <signal.h>
+
 int retardo(int velocidad, int *ch) {
     unsigned long int a = velocidad;
 
@@ -13,12 +14,16 @@ int retardo(int velocidad, int *ch) {
         if (*ch == KEY_DOWN) {
             velocidad += 500000;
             a += 500000;
-        } else if (*ch == KEY_UP) {
-            if ((velocidad - 500000) >= 500000) {
+        } else if ((velocidad - 500000) >= 500000) {
+            if  (*ch == KEY_UP){
                 velocidad -= 500000;
                 a -= 500000;
             }
-        } else if (*ch == 27) {
+        }else{
+          break;
+        }
+
+        if (*ch == 27) {
             break; // Sale del bucle si se presiona ESC
         }
         a--;
@@ -27,8 +32,7 @@ int retardo(int velocidad, int *ch) {
     return velocidad;
 }
 
-/*
-void mostrar(unsigned char dato) {
+void mostrarTesteo(unsigned char dato) {
     for (unsigned char mascara = 128; mascara > 0; mascara >>= 1) {
         if (dato & mascara) {
             printf("*");
@@ -38,11 +42,9 @@ void mostrar(unsigned char dato) {
     }
     printf("\n");
 }
-*/
 
-/*
-char* mostrar2(unsigned char dato) {
-    char* resultado = malloc(9);  // Reservar espacio para 8 caracteres y el car�cter nulo
+char* mostrar(unsigned char dato) {
+    char* resultado = malloc(9);  // Reservar espacio para 8 caracteres y el caracter nulo
     if (resultado == NULL) {
         return NULL;  // Manejo simple de errores de asignaci�n de memoria
     }
@@ -58,7 +60,6 @@ char* mostrar2(unsigned char dato) {
 
     return resultado;
 }
-*/
 
 void auto_fantastico(int velocidad) {
     initscr();            // Inicia ncurses
@@ -67,8 +68,10 @@ void auto_fantastico(int velocidad) {
     keypad(stdscr, TRUE); // Permite la captura de teclas especiales
     nodelay(stdscr, TRUE); // No espera a que se presione una tecla
 
+    unsigned int dato;
     int row = 0;
-    int ch = 0;
+    int ch;
+    char* texto;
     clear(); // Limpiar la pantalla para que no se acumulen las impresiones
 
     mvprintw(row++, 0, "El auto fantastico");
@@ -77,28 +80,52 @@ void auto_fantastico(int velocidad) {
     row++; // Deja una línea en blanco
     int t=0;
     while (1) {
-        // Dibujar algo en la pantalla (ejemplo simple)
+        dato =0x80;
+        for(int i=0;i<8;i++){
+
+          mvprintw(row, 0, "Velocidad=                ");
+          mvprintw(row, 0, "Velocidad= %d", velocidad);
+
+          texto = mostrar(dato);
+          mvprintw(row + 1, 0, "%s ",texto); // Ejemplo de dibujo, reemplázalo con el verdadero dibujo
+          refresh();
+
+          velocidad = retardo(velocidad, &ch); //Retardo y lectura de teclas
+          dato = dato >> 1;
+
+          if (ch == 27) {
+              break;
+          }
+          move(row + 1, 0);
+          clrtoeol();
+          refresh();
+      }
+
+      if (ch == 27) {
+        break;
+      }
+
+      dato=0x01;
+      for(int j=0;j<6;j++){
+
+        mvprintw(row, 0, "Velocidad=                ");
         mvprintw(row, 0, "Velocidad= %d", velocidad);
-        mvprintw(row + 1, 0, "Dibujando...%d",t); // Ejemplo de dibujo, reemplázalo con el verdadero dibujo
 
+        dato = dato << 1;
 
+        texto = mostrar(dato);
+        mvprintw(row + 1, 0, "%s ",texto); // Ejemplo de dibujo, reemplázalo con el verdadero dibujo
+        refresh();
 
         velocidad = retardo(velocidad, &ch); //Retardo y lectura de teclas
 
         if (ch == 27) {
-            break; // Sale del bucle si se presiona ESC
+            break;
         }
-
-        // Limpia la línea antes de imprimir la nueva velocidad
         move(row + 1, 0);
         clrtoeol();
-
-
-        refresh(); // Refresca la pantalla para mostrar cambios
-        t++;
-        if(t>100){
-          t=0;
-        }
+        refresh();
+      }
     }
     endwin(); // Finaliza ncurses
 }
@@ -113,68 +140,49 @@ void choque(unsigned long int velocidad) {
 
   int row = 0;
   int ch = 0;
+  char* texto;
+  uint8_t tabla[] = {
+      0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42
+  };
+  int t=0;
+
+
   clear(); // Limpiar la pantalla para que no se acumulen las impresiones
 
-  mvprintw(row++, 0, "El auto fantastico");
+  mvprintw(row++, 0, "El Choque");
   mvprintw(row++, 0, "Presione ESC para regresar al menu principal");
   mvprintw(row++, 0, "Pulse la flecha hacia arriba para incrementar la velocidad, o hacia abajo para disminuirla");
   row++; // Deja una línea en blanco
-  int t=0;
+
   while (1) {
       // Dibujar algo en la pantalla (ejemplo simple)
-      mvprintw(row, 0, "Velocidad= %d", velocidad);
-      mvprintw(row + 1, 0, "Dibujando...%d",t); // Ejemplo de dibujo, reemplázalo con el verdadero dibujo
+      for (int i = 0; i < 7; ++i){
+        mvprintw(row, 0, "Velocidad= %d", velocidad);
 
+        texto = mostrar(tabla[i]);
+        mvprintw(row + 1, 0, "%s ",texto);
 
+        velocidad = retardo(velocidad, &ch); //Retardo y lectura de teclas
 
-      velocidad = retardo(velocidad, &ch); //Retardo y lectura de teclas
+        if (ch == 27) {
+            break; // Sale del bucle si se presiona ESC
+        }
+
+        move(row + 1, 0);
+        clrtoeol();
+        refresh(); // Refresca la pantalla para mostrar cambios
+      }
 
       if (ch == 27) {
           break; // Sale del bucle si se presiona ESC
       }
 
-      // Limpia la línea antes de imprimir la nueva velocidad
-      move(row + 1, 0);
-      clrtoeol();
 
 
-      refresh(); // Refresca la pantalla para mostrar cambios
-      t++;
-      if(t>100){
-        t=0;
-      }
   }
   endwin(); // Finaliza ncurses
-  /*
-    printf("Choque\n");
-    printf("Presione ESC para regresar al menu principal\n");
-    printf("Pulse la flecha para arriba para incrementar la velocidad, o para abajo para disminuirla\n");
-    printf("\n");
-    uint8_t tabla[] = {
-        0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42
-    };
 
-    while (1) {
-        for (int i = 0; i < 7; ++i) {
-            printf("\033[A");
-            printf("\r                ");
-            printf("\rDemora: %lu\n", velocidad);
-
-            char* texto = mostrar2(tabla[i]);
-            printf("\r%s",texto);
-            velocidad = retardo(velocidad);
-
-
-            if (GetAsyncKeyState(VK_ESCAPE) & 0x0001) {
-                system("cls");
-                return;
-            }
-        }
-    }
-    */
 }
-
-
 
 void cerrar_terminal() {
     // Obtener el PID del proceso de la terminal
@@ -185,37 +193,39 @@ void cerrar_terminal() {
 }
 
 int main() {
-
     char contra[20];
-    char pw[20] = {0};
-    int v = 0;
-    int contador = 0, intentos = 3;
-    int contrasenia;
+    char contrasenia[20] = "abc10";
+    int intentos = 3;
 
-    while (intentos != 0) {
-        printf("Ingrese la contrasenia");
-        scanf("%s",&contra );
-        intentos--;
-    }
+    while (intentos > 0) {
+        printf("Ingrese la contrasenia: ");
+        scanf("%19s", contra); // Limitar el tamaño para evitar desbordamiento
 
-    if (contador < 3) {
+        if (strcmp(contra, contrasenia) == 0) {
+            printf("Contraseña correcta. Acceso concedido.\n");
+            break;
+        } else {
+            intentos--;
+            printf("Contraseña incorrecta. Te quedan %d intentos.\n", intentos);
+        }
 
-        printf("Bienvenido al sistema\n");
-    } else {
-          //cerrar_terminal();
-
+        if (intentos == 0) {
+            printf("Se han agotado los intentos. Acceso denegado.\n");
+            //cerrar_terminal
+        }
     }
 
     int opcion;
     unsigned long int velocidadAux = 5000000;
     unsigned long int velocidad = velocidadAux;
+
     do {
-        if (contador < 3) {
+        if (intentos > 0) {
             printf("\n(1) Autos fantastico\n");
-            printf("(2) La carrera\n");
-            printf("(3) El choque\n");
-            printf("(4) Bateria descargandose\n");
-            printf("(5) Choca los 5\n");
+            printf("(2) El choque\n");
+            printf("(3) La carrera\n");
+            printf("(4) Meter funcion\n");
+            printf("(5) Meter funcion\n");
             printf("(6) Salir\n");
 
             printf("\nIngrese la opcion que desee visualizar: ");
@@ -229,44 +239,35 @@ int main() {
 
             switch (opcion) {
                 case 1:
-                    system("cls");
                     auto_fantastico(velocidad);
                     opcion = 0;
                     velocidad = velocidadAux;
                     break;
                 case 2:
-                    system("cls");
-                    //carrera(velocidad);
-                    opcion = 0;
-                    velocidad = velocidadAux;
-                    break;
-                case 3:
-                    system("cls");
                     choque(velocidad);
                     opcion = 0;
                     velocidad = velocidadAux;
                     break;
+                case 3:
+                    opcion = 0;
+                    velocidad = velocidadAux;
+                    break;
                 case 4:
-                    system("cls");
                     //bateriaDescargandose(velocidad);
                     opcion = 0;
                     velocidad = velocidadAux;
                     break;
                 case 5:
-                    system("cls");
                     //chocaLos5(velocidad);
                     opcion = 0;
                     velocidad = velocidadAux;
                     break;
                 case 6:
-                    system("cls");
                     printf("Sistema apagado\n");
                     break;
 
 
-
                 default:
-                    system("cls");
                     printf("No existe secuencia para ese numero\n");
                     opcion = 0;
             }
